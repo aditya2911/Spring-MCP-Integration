@@ -1,0 +1,35 @@
+{
+  "mcpServers": {
+    "mcp-atlassian": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e", "CONFLUENCE_URL",
+        "-e", "CONFLUENCE_USERNAME",
+        "-e", "CONFLUENCE_PERSONAL_TOKEN",
+        "-e", "JIRA_URL",
+        "-e", "JIRA_USERNAME",
+        "-e", "JIRA_PERSONAL_TOKEN",
+        "-e", "JIRA_PERSONAL_TOKEN",
+        "-e", "JIRA_API_TOKEN",
+        "-e", "CONFLUENCE_API_TOKEN",
+
+        "ghcr.io/sooperset/mcp-atlassian:latest"
+      ],
+      "env": {
+        "CONFLUENCE_URL": "http://host.docker.internal:8090",
+        "CONFLUENCE_USERNAME": "adisalu15@gmail.com",
+        "CONFLUENCE_PERSONAL_TOKEN": "MjA3NjYwNTQxNjc4Og/2ZmwIBDMy9Y2MLsBrB7YDPiAP",
+        "CONFLUENCE_API_TOKEN": "MjA3NjYwNTQxNjc4Og/2ZmwIBDMy9Y2MLsBrB7YDPiAP",
+        "JIRA_URL": "http://host.docker.internal:8080",
+        "JIRA_USERNAME":"adisalu15@gmail.com",
+        "JIRA_PERSONAL_TOKEN": "MzA3MzY2MDY5MDQzOqPra3gTZoXmSPOSHVL1HckjSEu+",
+        "JIRA_API_TOKEN": "MzA3MzY2MDY5MDQzOqPra3gTZoXmSPOSHVL1HckjSEu+",
+        "MCP_VERY_VERBOSE":true,
+        "MCP_LOGGING_STDOUT": true
+      }
+    }
+  }
+}

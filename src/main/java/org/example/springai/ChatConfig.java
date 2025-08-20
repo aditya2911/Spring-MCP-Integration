@@ -1,0 +1,69 @@
+package org.example.springai; // IMPORTANT: Ensure this package matches your actual file location
+
+import io.modelcontextprotocol.client.McpAsyncClient;
+import io.modelcontextprotocol.client.McpSyncClient;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.ai.chat.memory.MessageWindowChatMemory;
+import org.springframework.ai.chat.model.ChatModel; // Ensure ChatModel is imported
+import org.springframework.ai.mcp.AsyncMcpToolCallbackProvider;
+import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
+import org.springframework.ai.tool.ToolCallback; // Import ToolCallback
+import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.boot.web.client.ClientHttpRequestFactories;
+import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.web.client.RestClientCustomizer;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.web.client.RestTemplate;
+
+import java.time.Duration;
+import java.util.List;
+import java.util.stream.Collectors; // Import Collectors
+
+@Configuration
+public class ChatConfig {
+
+    /**
+     * Configures the ChatClient to use the provided ChatModel and
+     * to register tools obtained specifically from the MCP ToolCallbackProvider.
+     * This method correctly extracts the individual ToolCallback instances
+     * from the MCP provider and passes them to the ChatClient.
+     *
+     * @param chatModel The AI chat model (e.g., OllamaChatModel).
+     * @param toolCallbackProviders A list of all ToolCallbackProvider beans
+     * discovered by Spring.
+     * @return A configured ChatClient instance.
+     */
+
+//    @Primary
+//    @Bean public List<McpAsyncClient> getClients(List<McpAsyncClient> clients){
+//        return clients;
+//    }
+    @Bean
+    public ChatClient chatClient(ChatModel chatModel, List<McpSyncClient> clients, ChatClient.Builder chatClientBuilder) {
+
+
+
+        // Build the ChatClient, passing the collected list of ToolCallback objects.
+        // This should invoke the defaultTools(Collection<ToolCallback>) method,
+        // which expects pre-built ToolCallback instances, not objects to be introspected.
+        return chatClientBuilder
+                .defaultToolCallbacks(new SyncMcpToolCallbackProvider(clients))
+                // This is the correct method for a list of ToolCallback instances
+                 .build();
+    }
+
+//    @Bean
+//    public RestClientCustomizer restClientCustomizer() {
+//        return restClientBuilder -> restClientBuilder
+//                .requestFactory(ClientHttpRequestFactories.get(ClientHttpRequestFactorySettings.DEFAULTS
+//                        .withConnectTimeout(Duration.ofMinutes(15))
+//                        .withReadTimeout(Duration.ofMinutes(15))));
+//    }
+
+//   x
+}

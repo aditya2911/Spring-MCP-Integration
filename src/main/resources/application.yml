@@ -1,0 +1,31 @@
+spring:
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        options:
+          model: qwen3:14b
+          temperature: 0.1
+      init:
+        timeout: 5m
+    mcp:
+      client:
+        stdio:
+
+          servers-configuration: classpath:/mcp-config.json
+        type: SYNC
+        enabled: true
+        name: "atlassian-mcp"
+        version: 1.0.0
+
+
+
+server:
+  port: 8081
+logging:
+  level:
+    org.springframework.ai.mcp: debug
+    io.modelcontextprotocol.client: WARN
+    io.modelcontextprotocol.spec: WARN
+
+
