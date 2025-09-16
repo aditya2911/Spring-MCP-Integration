@@ -1,16 +1,15 @@
 package org.example.springai;
 
 import io.modelcontextprotocol.client.McpAsyncClient;
+import io.modelcontextprotocol.client.McpSyncClient;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.mcp.AsyncMcpToolCallbackProvider;
 import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
-import org.springframework.ai.ollama.OllamaChatModel;
-import org.springframework.ai.ollama.api.OllamaOptions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,19 +23,18 @@ import java.util.Map;
 @RestController
 public class ChatController {
 
-    private final OllamaChatModel chatModel;
+    private final ChatModel chatModel;
 
     private final ChatClient chatClient;
 
-    private List<McpAsyncClient> clients;
-
-    private SyncMcpToolCallbackProvider toolCallbackProvider;
+    private final List<McpSyncClient> clients;
 
 
     @Autowired
-    public ChatController(OllamaChatModel chatModel, ChatClient chatClient) {
+    public ChatController(ChatModel chatModel, ChatClient chatClient,List<McpSyncClient> clients) {
         this.chatModel = chatModel;
         this.chatClient = chatClient;
+        this.clients = clients;
      }
 
     @GetMapping("/ai/generate")
@@ -57,7 +55,6 @@ public class ChatController {
 
         return chatClient.prompt()
                 .user(message)
-
                 .system("You are an helpful AI agent which will perform action on JIRA and confluence using mcp server.")
                  .stream().content();// returns a Flux<ChatResponse>
 
