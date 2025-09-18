@@ -1,24 +1,20 @@
 package org.example.springai;
 
-import io.modelcontextprotocol.client.McpAsyncClient;
 import io.modelcontextprotocol.client.McpSyncClient;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
- import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 public class ChatController {
@@ -65,6 +61,31 @@ public class ChatController {
 
 
     }
+
+    @PostMapping("/api/chat/completions")
+    public Mono<Map<String, Object>> chatCompletions(@RequestBody RequestBodyDTO requestBody) {
+        return chatClient.prompt()
+                .user(requestBody.getMessages().get(requestBody.getMessages().size() - 1).getContent())
+                .system("You are a helpful AI agent...")
+                .stream()
+                .content()
+                .collectList()  // collect all streamed chunks
+                .map(contents -> String.join("", contents)) // merge into single string
+                .map(finalContent -> Map.of(
+                        "id", UUID.randomUUID().toString(),
+                        "object", "chat.completion",
+                        "model", "mistral",
+                        "choices", List.of(
+                                Map.of("index", 0,
+                                        "message", Map.of("role", "assistant",
+                                                "content", finalContent),
+                                        "finish_reason", "stop")
+                        )
+                ));
+    }
+
+
+
 
 
 
